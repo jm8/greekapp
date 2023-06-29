@@ -19,7 +19,7 @@ type WordTypes = {
     [key in string]: WordType;
 };
 
-const wordTypesDatabase: WordTypes = {
+export const ALL_WORDS: WordTypes = {
     noun_1st_declension: {
         type: "noun",
         name: "Noun: 1st Declension, Feminine",
@@ -54,4 +54,13 @@ const wordTypesDatabase: WordTypes = {
     },
 };
 
-export default wordTypesDatabase;
+export function randomWord(wordType: string, inflection: string) {
+    const words = ALL_WORDS[wordType].words;
+    const i = Math.floor(Math.random() * words.length);
+    const word = words[i];
+    return (word as { [inflection in string]: string })[inflection];
+}
+
+export function getInflectionsForWordType(wordType: string): string[] {
+    return Object.keys(ALL_WORDS[wordType].words[0]);
+}
