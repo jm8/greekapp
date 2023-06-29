@@ -1,2 +1,12 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+    import { getRandomWordTypeAndInflection } from "../lib/weights";
+
+    let x = "click for random";
+</script>
+
+<button
+    on:click={() => {
+        const y = getRandomWordTypeAndInflection();
+        x = JSON.stringify(y);
+    }}>{x}</button
+>
