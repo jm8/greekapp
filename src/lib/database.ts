@@ -16,10 +16,9 @@ export async function getInflectionSkill(
 export async function updateSkill(
     wordType: string,
     inflection: string,
-    correct: boolean
+    delta: number
 ) {
     const originalSkill = await getInflectionSkill(wordType, inflection);
-    const delta = correct ? 1 : -1;
     let newSkill = originalSkill + delta;
     if (newSkill < 0) newSkill = 0;
     await set(`skill.${wordType}.${inflection}`, newSkill);

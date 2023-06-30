@@ -29,10 +29,19 @@
     let clicked: boolean;
 
     async function onClick() {
-        await updateSkill(wordType, inflection, correct);
         clicked = true;
         if (correct) {
+            await updateSkill(wordType, inflection, 1);
             dispatch("correct");
+        } else {
+            await updateSkill(wordType, inflection, -1);
+            for (const [otherInflection, otherWord] of Object.entries(
+                allInflections
+            )) {
+                if (otherWord === targetWord) {
+                    await updateSkill(wordType, otherInflection, -1);
+                }
+            }
         }
     }
 </script>
@@ -40,15 +49,6 @@
 {#if clicked || flip}
     <button disabled>
         {allInflections[inflection]}
-        {#await getInflectionSkill(wordType, inflection) then skill}
-            {#if clicked && correct}
-                {skill - 1} &rarr; {skill}
-            {:else if clicked && !correct}
-                {skill + 1} &rarr; {skill}
-            {:else}
-                {skill}
-            {/if}
-        {/await}
     </button>
 {:else}
     <button on:click={onClick}>{text}</button>
