@@ -1,10 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import {
-        getInflectionWeight,
-        getWordTypeWeight,
-        updateWeight,
-    } from "./database";
+    import { getInflectionSkill, updateSkill } from "./database";
 
     // text shown before the button is clicked
     export let allInflections: { [inflection: string]: string };
@@ -15,7 +11,7 @@
     // the word we are going for
     export let targetWord: string;
 
-    // the word type (used to update the weight on click)
+    // the word type (used to update the skill on click)
     export let wordType: string;
 
     // the text to show when not clicked
@@ -33,8 +29,8 @@
     let clicked: boolean;
 
     async function onClick() {
+        await updateSkill(wordType, inflection, correct);
         clicked = true;
-        updateWeight(wordType, inflection, correct);
         if (correct) {
             dispatch("correct");
         }
@@ -42,11 +38,18 @@
 </script>
 
 {#if clicked || flip}
-    <button disabled
-        >{correct ? "Correct" : "Incorrect"}
-        {#await getInflectionWeight(wordType, inflection) then weight}{weight}{/await}
-        {allInflections[inflection]}</button
-    >
+    <button disabled>
+        {allInflections[inflection]}
+        {#await getInflectionSkill(wordType, inflection) then skill}
+            {#if clicked && correct}
+                {skill - 1} &rarr; {skill}
+            {:else if clicked && !correct}
+                {skill + 1} &rarr; {skill}
+            {:else}
+                {skill}
+            {/if}
+        {/await}
+    </button>
 {:else}
     <button on:click={onClick}>{text}</button>
 {/if}

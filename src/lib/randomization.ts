@@ -1,4 +1,4 @@
-import { getInflectionWeight, getWordTypeWeight } from "./database";
+import { getInflectionSkill } from "./database";
 import { ALL_WORDS, getInflectionsForWordType } from "./words";
 
 function weightedRandom<T>(options: T[], weights: number[]) {
@@ -10,9 +10,13 @@ function weightedRandom<T>(options: T[], weights: number[]) {
     }
     let rand = Math.random() * sum;
     let i = cumulativeWeights.findIndex((x) => x >= rand);
-    console.log({ cumulativeWeights, rand, i });
     if (i === -1) i = weights.length - 1;
     return options[i];
+}
+
+async function getInflectionWeight(wordType: string, inflection: string) {
+    const skill = await getInflectionSkill(wordType, inflection);
+    return 2 ** (20 - skill);
 }
 
 export async function getRandomWordTypeAndInflection(): Promise<{
@@ -20,15 +24,17 @@ export async function getRandomWordTypeAndInflection(): Promise<{
     inflection: string;
 }> {
     const wordTypes = Object.keys(ALL_WORDS);
-    const wordTypeWeights = await Promise.all(wordTypes.map(getWordTypeWeight));
-    const wordType = weightedRandom(wordTypes, wordTypeWeights);
-
-    const inflections = getInflectionsForWordType(wordType);
-    const inflectionWeights = await Promise.all(
-        inflections.map((inflection) =>
+    const wordTypesAndInflections = wordTypes.flatMap((wordType) =>
+        getInflectionsForWordType(wordType).map((inflection) => ({
+            wordType,
+            inflection,
+        }))
+    );
+    const weights = await Promise.all(
+        wordTypesAndInflections.map(({ wordType, inflection }) =>
             getInflectionWeight(wordType, inflection)
         )
     );
-    const inflection = weightedRandom(inflections, inflectionWeights);
-    return { wordType, inflection };
+
+    return weightedRandom(wordTypesAndInflections, weights);
 }

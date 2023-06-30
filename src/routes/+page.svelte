@@ -2,7 +2,7 @@
     import { randomWord as getRandomWord } from "$lib/words";
     import { onMount } from "svelte";
     import { getRandomWordTypeAndInflection } from "../lib/randomization";
-    import { updateWeight } from "$lib/database";
+    import { updateSkill } from "$lib/database";
     import Option from "$lib/Option.svelte";
     import OptionsNoun from "$lib/OptionsNoun.svelte";
 
@@ -29,6 +29,7 @@
             {allInflections}
             {word}
             {wordType}
+            flip={answeredCorrectly}
         />
     {/key}
     {#if answeredCorrectly}

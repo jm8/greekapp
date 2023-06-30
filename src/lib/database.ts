@@ -1,41 +1,26 @@
 import { get, set } from "idb-keyval";
-import { getInflectionsForWordType } from "./words";
-import { browser } from "$app/environment";
 
-export const DEFAULT_WEIGHT = 4096;
+export const DEFAULT_SKILL = 10;
 
-export async function getInflectionWeight(
+export async function getInflectionSkill(
     wordType: string,
     inflection: string
 ): Promise<number> {
-    const result = await get<number>(`weight.${wordType}.${inflection}`);
+    const result = await get<number>(`skill.${wordType}.${inflection}`);
     if (result === undefined) {
-        return DEFAULT_WEIGHT;
+        return DEFAULT_SKILL;
     }
     return result;
 }
 
-export async function getWordTypeWeight(wordType: string): Promise<number> {
-    let result = 0;
-    const inflections = getInflectionsForWordType(wordType);
-    const weights = await Promise.all(
-        inflections.map((inflection) =>
-            getInflectionWeight(wordType, inflection)
-        )
-    );
-    for (const weight of weights) {
-        result += weight;
-    }
-    return result;
-}
-
-export async function updateWeight(
+export async function updateSkill(
     wordType: string,
     inflection: string,
     correct: boolean
 ) {
-    const originalWeight = await getInflectionWeight(wordType, inflection);
-    const multiplier = correct ? 2 : 0.5;
-    const newWeight = originalWeight * multiplier;
-    await set(`weight.${wordType}.${inflection}`, newWeight);
+    const originalSkill = await getInflectionSkill(wordType, inflection);
+    const delta = correct ? 1 : -1;
+    let newSkill = originalSkill + delta;
+    if (newSkill < 0) newSkill = 0;
+    await set(`skill.${wordType}.${inflection}`, newSkill);
 }
