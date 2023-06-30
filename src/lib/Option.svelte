@@ -47,9 +47,17 @@
 </script>
 
 {#if clicked || flip}
-    <button disabled>
+    <button
+        class="m-4 p-4"
+        class:bg-green-400={correct}
+        class:bg-red-400={clicked && !correct}
+        class:bg-gray-400={!clicked && !correct}
+        disabled
+    >
         {allInflections[inflection]}
     </button>
 {:else}
-    <button on:click={onClick}>{text}</button>
+    <button class="bg-blue-400 hover:bg-blue-300 m-4 p-4" on:click={onClick}
+        >{text}</button
+    >
 {/if}

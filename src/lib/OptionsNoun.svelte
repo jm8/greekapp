@@ -13,16 +13,29 @@
     // whether to flip all (after you get it correctly before moving on).
     // in this case will be a neutral color
     export let flip = false;
+
+    const nounInflections = [
+        "singular_nominative",
+        "singular_genitive",
+        "singular_dative",
+        "singular_accusative",
+        "plural_nominative",
+        "plural_genitive",
+        "plural_dative",
+        "plural_accusative",
+    ];
 </script>
 
-{#each Object.keys(allInflections) as inflection}
-    <Option
-        {allInflections}
-        {inflection}
-        {wordType}
-        {flip}
-        targetWord={word}
-        text={inflection}
-        on:correct
-    />
-{/each}
+<div class="grid grid-rows-4 grid-cols-2 grid-flow-col">
+    {#each nounInflections as inflection}
+        <Option
+            {allInflections}
+            {inflection}
+            {wordType}
+            {flip}
+            targetWord={word}
+            text={inflection}
+            on:correct
+        />
+    {/each}
+</div>

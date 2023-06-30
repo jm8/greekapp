@@ -2,8 +2,6 @@
     import { randomWord as getRandomWord } from "$lib/words";
     import { onMount } from "svelte";
     import { getRandomWordTypeAndInflection } from "../lib/randomization";
-    import { updateSkill } from "$lib/database";
-    import Option from "$lib/Option.svelte";
     import OptionsNoun from "$lib/OptionsNoun.svelte";
 
     let allInflections: { [inflection in string]: string };
@@ -21,18 +19,23 @@
     onMount(generateWord);
 </script>
 
-{#if word}
-    <h2>{word}</h2>
-    {#key allInflections}
-        <OptionsNoun
-            on:correct={() => (answeredCorrectly = true)}
-            {allInflections}
-            {word}
-            {wordType}
-            flip={answeredCorrectly}
-        />
-    {/key}
-    {#if answeredCorrectly}
-        <button on:click={generateWord}>Next</button>
+<div class="flex flex-col">
+    {#if word}
+        <h2 class="p-4 text-3xl text-center text-white">{word}</h2>
+        {#key allInflections}
+            <OptionsNoun
+                on:correct={() => (answeredCorrectly = true)}
+                {allInflections}
+                {word}
+                {wordType}
+                flip={answeredCorrectly}
+            />
+        {/key}
+        {#if answeredCorrectly}
+            <button
+                class="m-4 p-4 bg-green-400 hover:bg-green-300"
+                on:click={generateWord}>Next</button
+            >
+        {/if}
     {/if}
-{/if}
+</div>
