@@ -3,29 +3,35 @@
     import { onMount } from "svelte";
     import { getRandomWordTypeAndInflection } from "../lib/randomization";
     import { updateWeight } from "$lib/database";
+    import Option from "$lib/Option.svelte";
+    import OptionsNoun from "$lib/OptionsNoun.svelte";
 
-    let word: string;
-    let inflection: string;
+    let allInflections: { [inflection in string]: string };
     let wordType: string;
+    let word: string;
+    let answeredCorrectly = false;
 
     async function generateWord() {
-        const wordTypeAndInflection = await getRandomWordTypeAndInflection();
-        wordType = wordTypeAndInflection.wordType;
-        inflection = wordTypeAndInflection.inflection;
-        word = getRandomWord(wordType, inflection);
+        const randomized = await getRandomWordTypeAndInflection();
+        answeredCorrectly = false;
+        allInflections = getRandomWord(randomized.wordType);
+        wordType = randomized.wordType;
+        word = allInflections[randomized.inflection];
     }
-
-    async function nextWord(correct: boolean) {
-        await updateWeight(inflection, wordType, correct);
-        await generateWord();
-    }
-
     onMount(generateWord);
 </script>
 
 {#if word}
     <h2>{word}</h2>
-
-    <button on:click={() => nextWord(true)}>Correct</button>
-    <button on:click={() => nextWord(false)}>Incorrect</button>
+    {#key allInflections}
+        <OptionsNoun
+            on:correct={() => (answeredCorrectly = true)}
+            {allInflections}
+            {word}
+            {wordType}
+        />
+    {/key}
+    {#if answeredCorrectly}
+        <button on:click={generateWord}>Next</button>
+    {/if}
 {/if}

@@ -54,11 +54,11 @@ export const ALL_WORDS: WordTypes = {
     },
 };
 
-export function randomWord(wordType: string, inflection: string) {
+export function randomWord(wordType: string) {
     const words = ALL_WORDS[wordType].words;
     const i = Math.floor(Math.random() * words.length);
     const word = words[i];
-    return (word as { [inflection in string]: string })[inflection];
+    return word;
 }
 
 export function getInflectionsForWordType(wordType: string): string[] {
