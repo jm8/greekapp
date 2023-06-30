@@ -31,7 +31,13 @@
     async function onClick() {
         clicked = true;
         if (correct) {
-            await updateSkill(wordType, inflection, 1);
+            for (const [otherInflection, otherWord] of Object.entries(
+                allInflections
+            )) {
+                if (otherWord === targetWord) {
+                    await updateSkill(wordType, otherInflection, 1);
+                }
+            }
             dispatch("correct");
         } else {
             await updateSkill(wordType, inflection, -1);

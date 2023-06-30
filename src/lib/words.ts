@@ -22,7 +22,7 @@ type WordTypes = {
 export const ALL_WORDS: WordTypes = {
     noun_1st_declension: {
         type: "noun",
-        name: "Noun: 1st Declension, Feminine",
+        name: "Noun: 1st Declension, Eta, Feminine",
         words: [
             {
                 singular_nominative: "φωνή",
@@ -33,6 +33,22 @@ export const ALL_WORDS: WordTypes = {
                 plural_genitive: "φωνῶν",
                 plural_dative: "φωναῖς",
                 plural_accusative: "φωνάς",
+            },
+        ],
+    },
+    noun_1st_declension_alpha: {
+        type: "noun",
+        name: "Noun: 1st Declension, Alpha, Feminine",
+        words: [
+            {
+                singular_nominative: "καρδία",
+                singular_genitive: "καρδίας",
+                singular_dative: "καρδίᾳ",
+                singular_accusative: "καρδίαν",
+                plural_nominative: "καρδίαι",
+                plural_genitive: "καρδιῶν",
+                plural_dative: "καρδίαις",
+                plural_accusative: "καρδίας",
             },
         ],
     },
