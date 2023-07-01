@@ -1,53 +1,22 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { getInflectionSkill, updateSkill } from "./database";
 
-    // text shown before the button is clicked
-    export let allInflections: { [inflection: string]: string };
+    export let hiddenText: string;
+    export let revealedText: string;
+    export let isCorrect: boolean;
+    export let flip: boolean;
+    export let disabled = false;
 
-    // the inflection of this option
-    export let inflection: string;
-
-    // the word we are going for
-    export let targetWord: string;
-
-    // the word type (used to update the skill on click)
-    export let wordType: string;
-
-    // the text to show when not clicked
-    export let text: string;
+    let clicked: boolean;
 
     const dispatch = createEventDispatcher();
 
-    $: correct = allInflections[inflection] == targetWord;
-
-    // whether to flip all (after you get it correctly before moving on).
-    // in this case will be a neutral color
-    export let flip = false;
-
-    // whether the button has been clicked. it can only be clicked once
-    let clicked: boolean;
-
-    async function onClick() {
+    function onClick() {
         clicked = true;
-        if (correct) {
-            for (const [otherInflection, otherWord] of Object.entries(
-                allInflections
-            )) {
-                if (otherWord === targetWord) {
-                    await updateSkill(wordType, otherInflection, 1);
-                }
-            }
+        if (isCorrect) {
             dispatch("correct");
         } else {
-            await updateSkill(wordType, inflection, -1);
-            for (const [otherInflection, otherWord] of Object.entries(
-                allInflections
-            )) {
-                if (otherWord === targetWord) {
-                    await updateSkill(wordType, otherInflection, -1);
-                }
-            }
+            dispatch("incorrect");
         }
     }
 </script>
@@ -55,15 +24,17 @@
 {#if clicked || flip}
     <button
         class="m-4 p-4"
-        class:bg-green-400={correct}
-        class:bg-red-400={clicked && !correct}
-        class:bg-gray-400={!clicked && !correct}
+        class:bg-green-400={isCorrect}
+        class:bg-red-400={clicked && !isCorrect}
+        class:bg-gray-400={!clicked && !isCorrect}
         disabled
     >
-        {allInflections[inflection]}
+        {revealedText}
     </button>
 {:else}
-    <button class="bg-blue-400 hover:bg-blue-300 m-4 p-4" on:click={onClick}
-        >{text}</button
+    <button
+        {disabled}
+        class="bg-blue-400 hover:bg-blue-300 focus:bg-blue-300 m-4 p-4 disabled:opacity-50"
+        on:click={onClick}>{hiddenText}</button
     >
 {/if}

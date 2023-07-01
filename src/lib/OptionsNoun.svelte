@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Option from "./Option.svelte";
+    import InflectionOption from "./InflectionOption.svelte";
 
     // a map from inflection to word
     export let allInflections: { [inflection in string]: string };
@@ -28,13 +28,12 @@
 
 <div class="grid grid-rows-4 grid-cols-2 grid-flow-col">
     {#each nounInflections as inflection}
-        <Option
+        <InflectionOption
             {allInflections}
             {inflection}
             {wordType}
             {flip}
             targetWord={word}
-            text={inflection}
             on:correct
         />
     {/each}

@@ -1,4 +1,4 @@
-type Noun = {
+type NounInflections = {
     singular_nominative: string;
     singular_genitive: string;
     singular_dative: string;
@@ -9,20 +9,51 @@ type Noun = {
     plural_accusative: string;
 };
 
-type WordType = {
-    type: "noun";
-    name: string;
-    words: Noun[];
+type VerbInflections = {
+    singular_1st: string;
+    singular_2nd: string;
+    singular_3rd: string;
+    plural_1st: string;
+    plural_2nd: string;
+    plural_3rd: string;
 };
+
+type Gender = "masculine" | "feminine" | "neuter";
+type Voice = "active" | "middle" | "passive" | "middlepassive";
+type Tense =
+    | "present"
+    | "future"
+    | "imperfect"
+    | "aorist"
+    | "perfect"
+    | "pluperfect";
+
+type Mood = "indicative" | "subjunctive" | "optative" | "imperative";
+
+export type NounWordType = {
+    partOfSpeech: "noun";
+    gender: Gender;
+    words: NounInflections[];
+};
+
+export type VerbWordType = {
+    partOfSpeech: "verb";
+    voice: Voice;
+    tense: Tense;
+    mood: Mood;
+    words: VerbInflections[];
+};
+
+export type WordType = NounWordType | VerbWordType;
 
 type WordTypes = {
     [key in string]: WordType;
 };
 
-export const ALL_WORDS: WordTypes = {
+export const WORD_TYPES: WordTypes = {
     noun_1st_declension: {
-        type: "noun",
-        name: "Noun: 1st Declension, Eta, Feminine",
+        partOfSpeech: "noun",
+        gender: "feminine",
         words: [
             {
                 singular_nominative: "φωνή",
@@ -37,8 +68,8 @@ export const ALL_WORDS: WordTypes = {
         ],
     },
     noun_1st_declension_alpha: {
-        type: "noun",
-        name: "Noun: 1st Declension, Alpha, Feminine",
+        partOfSpeech: "noun",
+        gender: "feminine",
         words: [
             {
                 singular_nominative: "καρδία",
@@ -53,8 +84,8 @@ export const ALL_WORDS: WordTypes = {
         ],
     },
     noun_2nd_declension: {
-        type: "noun",
-        name: "Noun: 2nd Declension, Masculine",
+        partOfSpeech: "noun",
+        gender: "masculine",
         words: [
             {
                 singular_nominative: "λόγος",
@@ -68,15 +99,31 @@ export const ALL_WORDS: WordTypes = {
             },
         ],
     },
+    eimi_present_active_indicative: {
+        partOfSpeech: "verb",
+        tense: "present",
+        voice: "active",
+        mood: "indicative",
+        words: [
+            {
+                singular_1st: "εἰμῐ",
+                singular_2nd: "εἶ",
+                singular_3rd: "ἐστί(ν)",
+                plural_1st: "ἐσμέν",
+                plural_2nd: "ἐστέ",
+                plural_3rd: "εἰσί(ν)",
+            },
+        ],
+    },
 };
 
 export function randomWord(wordType: string) {
-    const words = ALL_WORDS[wordType].words;
+    const words = WORD_TYPES[wordType].words;
     const i = Math.floor(Math.random() * words.length);
     const word = words[i];
     return word;
 }
 
 export function getInflectionsForWordType(wordType: string): string[] {
-    return Object.keys(ALL_WORDS[wordType].words[0]);
+    return Object.keys(WORD_TYPES[wordType].words[0]);
 }
