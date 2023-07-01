@@ -20,33 +20,34 @@
     onMount(generateWord);
 </script>
 
-<div class="flex flex-col">
+<div class="w-full h-full max-w-4xl mx-auto flex flex-col">
     {#if word}
         <h2 class="p-4 text-3xl text-center text-white">{word}</h2>
-        {#key allInflections}
-            {#if WORD_TYPES[wordType].partOfSpeech === "noun"}
-                <OptionsNoun
-                    on:correct={() => (answeredCorrectly = true)}
-                    {allInflections}
-                    {word}
-                    {wordType}
-                    flip={answeredCorrectly}
-                />
-            {:else if WORD_TYPES[wordType].partOfSpeech === "verb"}
-                <OptionsVerb
-                    on:correct={() => (answeredCorrectly = true)}
-                    {allInflections}
-                    {word}
-                    {wordType}
-                    flip={answeredCorrectly}
-                />
-            {/if}
-        {/key}
-        {#if answeredCorrectly}
-            <button
-                class="m-4 p-4 bg-green-400 hover:bg-green-300 focus:bg-green-300"
-                on:click={generateWord}>Next</button
-            >
-        {/if}
+        <div class="flex-1 flex flex-col justify-center">
+            {#key allInflections}
+                {#if WORD_TYPES[wordType].partOfSpeech === "noun"}
+                    <OptionsNoun
+                        on:correct={() => (answeredCorrectly = true)}
+                        {allInflections}
+                        {word}
+                        {wordType}
+                        flip={answeredCorrectly}
+                    />
+                {:else if WORD_TYPES[wordType].partOfSpeech === "verb"}
+                    <OptionsVerb
+                        on:correct={() => (answeredCorrectly = true)}
+                        {allInflections}
+                        {word}
+                        {wordType}
+                        flip={answeredCorrectly}
+                    />
+                {/if}
+            {/key}
+        </div>
     {/if}
+    <button
+        style:visibility={answeredCorrectly ? "visible" : "hidden"}
+        class="m-4 p-4 bg-green-400 hover:bg-green-300 focus:bg-green-300"
+        on:click={generateWord}>Next</button
+    >
 </div>
