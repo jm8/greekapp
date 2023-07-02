@@ -18,10 +18,6 @@
     // the form of the word we're going for
     export let wordType: string;
 
-    // whether to flip all (after you get it correctly before moving on).
-    // in this case will be a neutral color
-    export let flip = false;
-
     $: wordTypeDefinition = WORD_TYPES[wordType] as VerbWordType;
 
     const verbInflections = [
@@ -39,6 +35,7 @@
         voice: false,
         tense: false,
         inflection: false,
+        mood: false,
     };
 
     function onCorrect(part: keyof typeof corrects) {
@@ -57,14 +54,6 @@
 </script>
 
 <RadioOptions
-    class_="grid grid-cols-4"
-    options={["active", "middle", "passive", "middlepassive"]}
-    on:correct={() => onCorrect("voice")}
-    on:incorrect={onIncorrect}
-    correctOption={wordTypeDefinition.voice}
-/>
-
-<RadioOptions
     class_="grid grid-cols-3"
     options={[
         "present",
@@ -78,6 +67,23 @@
     on:correct={() => onCorrect("tense")}
     correctOption={wordTypeDefinition.tense}
 />
+
+<RadioOptions
+    class_="grid grid-cols-3"
+    options={["active", "middle", "passive"]}
+    on:correct={() => onCorrect("voice")}
+    on:incorrect={onIncorrect}
+    correctOption={wordTypeDefinition.voice}
+/>
+
+<RadioOptions
+    class_="grid grid-cols-4"
+    options={["indicative", "subjunctive", "optative", "imperative"]}
+    on:correct={() => onCorrect("mood")}
+    on:incorrect={onIncorrect}
+    correctOption={wordTypeDefinition.mood}
+/>
+
 <div class="grid grid-rows-3 grid-cols-2 grid-flow-col">
     {#each verbInflections as inflection}
         <InflectionOption

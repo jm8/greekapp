@@ -115,6 +115,54 @@ export const WORD_TYPES: WordTypes = {
             },
         ],
     },
+    eimi_imperfect_active_indicative: {
+        partOfSpeech: "verb",
+        voice: "active",
+        tense: "imperfect",
+        mood: "indicative",
+        words: [
+            {
+                singular_1st: "ἤμην",
+                singular_2nd: "ἦς",
+                singular_3rd: "ἦν",
+                plural_1st: "ἦμεν",
+                plural_2nd: "ἦτε",
+                plural_3rd: "ἦσαν",
+            },
+        ],
+    },
+    eimi_future_middle_indicative: {
+        partOfSpeech: "verb",
+        voice: "middle",
+        tense: "future",
+        mood: "indicative",
+        words: [
+            {
+                singular_1st: "ἔσομαι",
+                singular_2nd: "ἔσῃ",
+                singular_3rd: "ἔσται",
+                plural_1st: "ἐσόμεθα",
+                plural_2nd: "ἔσεσθε",
+                plural_3rd: "ἔσονται",
+            },
+        ],
+    },
+    eimi_present_active_subjunctive: {
+        partOfSpeech: "verb",
+        voice: "active",
+        tense: "present",
+        mood: "subjunctive",
+        words: [
+            {
+                singular_1st: "ὦ",
+                singular_2nd: "ᾖς",
+                singular_3rd: "ᾖ",
+                plural_1st: "ὦμεν",
+                plural_2nd: "ἦτε",
+                plural_3rd: "ὦσι(ν)",
+            },
+        ],
+    },
 };
 
 export function randomWord(wordType: string) {
