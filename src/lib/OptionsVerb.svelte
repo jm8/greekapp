@@ -7,7 +7,6 @@
         type VerbWordType,
         getInflectionsForWordType,
     } from "./words";
-    import { updateSkill } from "./database";
 
     // a map from inflection to word
     export let allInflections: { [inflection in string]: string };
@@ -41,14 +40,14 @@
     function onCorrect(part: keyof typeof corrects) {
         corrects[part] = true;
         if (Object.values(corrects).every((v) => v)) {
-            dispatch("correct");
+            // updateSkill(wordType, inflection, -1);
         }
     }
 
     function onIncorrect() {
         for (const inflection of getInflectionsForWordType(wordType)) {
             console.log("-1 ", wordType, inflection);
-            updateSkill(wordType, inflection, -1);
+            // updateSkill(wordType, inflection, -1);
         }
     }
 </script>
