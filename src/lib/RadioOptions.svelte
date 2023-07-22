@@ -12,7 +12,7 @@
 
     function onCorrect() {
         flip = true;
-        dispatch("correct");
+        dispatch("answered");
     }
 </script>
 
@@ -23,7 +23,7 @@
             hiddenText={option}
             revealedText={option}
             isCorrect={option === correctOption}
-            on:correct={onCorrect}
+            on:answered={onCorrect}
             on:incorrect
         />
     {/each}

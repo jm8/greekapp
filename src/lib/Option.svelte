@@ -14,7 +14,7 @@
     function onClick() {
         clicked = true;
         if (isCorrect) {
-            dispatch("correct");
+            dispatch("answered");
         } else {
             dispatch("incorrect");
         }

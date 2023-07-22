@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
     import InflectionOption from "./InflectionOption.svelte";
 
     // a map from inflection to word
@@ -7,12 +8,14 @@
     // the target word
     export let word: string;
 
-    // used for updating skills
-    export let wordType: string;
+    let flip: boolean;
 
-    // whether to flip all (after you get it correctly before moving on).
-    // in this case will be a neutral color
-    export let flip = false;
+    const dispatch = createEventDispatcher();
+
+    async function onCorrect() {
+        flip = true;
+        dispatch("answered");
+    }
 
     const nounInflections = [
         "singular_nominative",
@@ -31,10 +34,10 @@
         <InflectionOption
             {allInflections}
             {inflection}
-            {wordType}
             {flip}
             targetWord={word}
-            on:correct
+            on:answered={onCorrect}
+            on:incorrect
         />
     {/each}
 </div>
