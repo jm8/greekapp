@@ -1,5 +1,6 @@
-import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import { openDB, type DBSchema } from "idb";
 import { WORD_TYPES, getInflectionsForWordType } from "./words";
+import { writable, type Writable } from "svelte/store";
 
 interface SpacedRepetition extends DBSchema {
     words: {
@@ -10,6 +11,13 @@ interface SpacedRepetition extends DBSchema {
         };
         key: string;
         indexes: { byDueDate: number };
+    };
+    wordTypeFilters: {
+        value: {
+            wordType: string;
+            included: boolean;
+        };
+        key: string;
     };
 }
 
@@ -22,6 +30,9 @@ export async function getDb() {
         upgrade(db, oldVersion, newVersion, transaction, event) {
             const wordsStore = db.createObjectStore("words", {
                 keyPath: "wordTypeAndInflection",
+            });
+            db.createObjectStore("wordTypeFilters", {
+                keyPath: "wordType",
             });
             wordsStore.createIndex("byDueDate", "dueDate");
         },
@@ -39,6 +50,13 @@ export async function getDb() {
                     interval: 8,
                 });
             }
+            const filter = await db.get("wordTypeFilters", wordType);
+            if (!filter) {
+                await db.add("wordTypeFilters", {
+                    wordType,
+                    included: false,
+                });
+            }
         }
     }
     return db;
@@ -46,12 +64,31 @@ export async function getDb() {
 
 const db = await getDb();
 
+async function findAsync<T>(
+    xs: T[],
+    f: (x: T) => Promise<boolean>
+): Promise<T | undefined> {
+    for (const x of xs) {
+        if (await f(x)) {
+            return x;
+        }
+    }
+    return undefined;
+}
+
 export async function getNextWordTypeAndInflection() {
-    const word = await db.getFromIndex(
+    const wordsDue = await db.getAllFromIndex(
         "words",
         "byDueDate",
         IDBKeyRange.upperBound(nowHour())
     );
+    const word = await findAsync(wordsDue, async (word) => {
+        const filter = await db.get(
+            "wordTypeFilters",
+            word.wordTypeAndInflection.split(".")[0]
+        );
+        return filter?.included ?? false;
+    });
     if (!word) {
         return undefined;
     }
@@ -103,4 +140,18 @@ export async function markIncorrect(wordType: string, inflection: string) {
         interval: newInterval,
     });
     return { wordType, inflection };
+}
+
+export function wordTypeFilterStore(wordType: string): Writable<boolean> {
+    if (!wordType) {
+        console.log("wordType undefined");
+    }
+    const store = writable(false);
+    db.get("wordTypeFilters", wordType)?.then((wordTypeFilter) => {
+        store.set(wordTypeFilter?.included ?? false);
+    });
+    store.subscribe((newIncluded) => {
+        db.put("wordTypeFilters", { wordType, included: newIncluded });
+    });
+    return store;
 }
