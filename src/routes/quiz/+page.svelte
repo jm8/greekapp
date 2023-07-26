@@ -13,6 +13,8 @@
     let allInflections: { [inflection in string]: string };
     let wordType: string;
     let word: string;
+    let interval: number;
+    let newInterval: number | undefined;
     let correct = true;
     let answered = false;
 
@@ -26,6 +28,8 @@
         correct = true;
         allInflections = getRandomWord(randomized.wordType);
         wordType = randomized.wordType;
+        interval = randomized.interval;
+        newInterval = undefined;
         word = allInflections[randomized.inflection];
     }
     onMount(generateWord);
@@ -35,7 +39,8 @@
         if (correct) {
             for (const inflection of Object.keys(allInflections)) {
                 if (allInflections[inflection] === word) {
-                    await markCorrect(wordType, inflection);
+                    newInterval = (await markCorrect(wordType, inflection))
+                        .interval;
                 }
             }
         }
@@ -45,7 +50,8 @@
         correct = false;
         for (const inflection of Object.keys(allInflections)) {
             if (allInflections[inflection] === word) {
-                await markIncorrect(wordType, inflection);
+                newInterval = (await markIncorrect(wordType, inflection))
+                    .interval;
             }
         }
     }
@@ -54,7 +60,16 @@
 <div class="w-full h-full max-w-4xl mx-auto flex flex-col">
     {#if word}
         <a class="p-4 text-white" href="/">Back</a>
-        <h2 class="text-3xl text-center text-white">{word}</h2>
+        <div class="flex flex-row justify-center items-end gap-2">
+            <h2 class="text-3xl text-center text-white">
+                {word}
+            </h2>
+            {#if newInterval !== undefined}
+                <div class="text-white"><s>{interval}h</s> {newInterval}h</div>
+            {:else}
+                <div class="text-white">{interval}h</div>
+            {/if}
+        </div>
         <div class="flex-1 flex flex-col justify-center">
             {#key allInflections}
                 {#if WORD_TYPES[wordType].partOfSpeech === "noun"}

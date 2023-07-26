@@ -1,6 +1,7 @@
 import { openDB, type DBSchema } from "idb";
 import { WORD_TYPES, getInflectionsForWordType } from "./words";
 import { writable, type Writable } from "svelte/store";
+import shuffle from "shuffle-array";
 
 interface SpacedRepetition extends DBSchema {
     words: {
@@ -83,6 +84,8 @@ export async function getNextWordTypesAndInflections() {
         "byDueDate",
         IDBKeyRange.upperBound(nowHour())
     );
+    // todo: performance?
+    shuffle(wordsDue);
     const words = await filterAsync(wordsDue, async (word) => {
         const filter = await db.get(
             "wordTypeFilters",
@@ -90,10 +93,12 @@ export async function getNextWordTypesAndInflections() {
         );
         return filter?.included ?? false;
     });
-    const wordTypesAndInflections = words.map((word) => {
-        const [wordType, inflection] = word.wordTypeAndInflection.split(".");
-        return { wordType, inflection };
-    });
+    const wordTypesAndInflections = words.map(
+        ({ dueDate, interval, wordTypeAndInflection }) => {
+            const [wordType, inflection] = wordTypeAndInflection.split(".");
+            return { wordType, inflection, dueDate, interval };
+        }
+    );
 
     return wordTypesAndInflections;
 }
@@ -126,7 +131,7 @@ export async function markCorrect(wordType: string, inflection: string) {
         dueDate: newDueDate,
         interval: newInterval,
     });
-    return { wordType, inflection };
+    return { wordType, inflection, interval: newInterval, dueDate: newDueDate };
 }
 
 export async function markIncorrect(wordType: string, inflection: string) {
@@ -136,20 +141,12 @@ export async function markIncorrect(wordType: string, inflection: string) {
     }
     const newInterval = word.interval * 0.5;
     const newDueDate = nowHour() + word.interval;
-    console.log(
-        "Incorrect: ",
-        wordType,
-        inflection,
-        word.interval,
-        "->",
-        newInterval
-    );
     db.put("words", {
         wordTypeAndInflection: `${wordType}.${inflection}`,
         dueDate: newDueDate,
         interval: newInterval,
     });
-    return { wordType, inflection };
+    return { wordType, inflection, interval: newInterval, dueDate: newDueDate };
 }
 
 export function wordTypeFilterStore(wordType: string): Writable<boolean> {
