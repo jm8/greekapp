@@ -4,7 +4,8 @@ import json
 from collections import defaultdict
 
 # WORD = "ἀγαπάω"
-WORD = "εἰμί"
+# WORD = "εἰμί"
+WORD = "δίδωμι"
 
 for line in open("kaikki.org-dictionary-AncientGreek-words.json"):
     if WORD not in line:

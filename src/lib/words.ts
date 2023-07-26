@@ -163,6 +163,38 @@ export const WORD_TYPES: WordTypes = {
             },
         ],
     },
+    mi_present_active_indicate: {
+        partOfSpeech: "verb",
+        voice: "active",
+        tense: "present",
+        mood: "indicative",
+        words: [
+            {
+                singular_1st: "δῐ́δωμῐ",
+                singular_2nd: "δῐ́δως",
+                singular_3rd: "δῐ́δωσῐν",
+                plural_1st: "δῐ́δομεν",
+                plural_2nd: "δῐ́δοτε",
+                plural_3rd: "δῐδόᾱσῐν",
+            },
+        ],
+    },
+    mi_aorist_active_indicative: {
+        partOfSpeech: "verb",
+        voice: "active",
+        tense: "aorist",
+        mood: "indicative",
+        words: [
+            {
+                plural_1st: "δώκᾰμεν",
+                plural_2nd: "δώκᾰτε",
+                plural_3rd: "δῶκᾰν",
+                singular_1st: "δῶκᾰ",
+                singular_2nd: "δῶκᾰς",
+                singular_3rd: "δῶκεν",
+            },
+        ],
+    },
 };
 
 export function randomWord(wordType: string) {
