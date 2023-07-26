@@ -47,6 +47,10 @@
     }
 
     async function onIncorrect() {
+        if (!correct) {
+            // don't mark incorrect twice
+            return;
+        }
         correct = false;
         for (const inflection of Object.keys(allInflections)) {
             if (allInflections[inflection] === word) {

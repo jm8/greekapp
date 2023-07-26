@@ -1,4 +1,4 @@
-import { openDB, type DBSchema } from "idb";
+import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import { WORD_TYPES, getInflectionsForWordType } from "./words";
 import { writable, type Writable } from "svelte/store";
 import shuffle from "shuffle-array";
@@ -26,7 +26,10 @@ function nowHour() {
     return Number(new Date()) * 2.77778e-7;
 }
 
+let _db: IDBPDatabase<SpacedRepetition> | undefined = undefined;
+
 export async function getDb() {
+    if (_db) return _db;
     const db = await openDB<SpacedRepetition>("spaced_repetition", 1, {
         upgrade(db, oldVersion, newVersion, transaction, event) {
             const wordsStore = db.createObjectStore("words", {
@@ -60,10 +63,9 @@ export async function getDb() {
             }
         }
     }
+    _db = db;
     return db;
 }
-
-const db = await getDb();
 
 async function filterAsync<T>(
     xs: T[],
@@ -79,6 +81,7 @@ async function filterAsync<T>(
 }
 
 export async function getNextWordTypesAndInflections() {
+    const db = await getDb();
     const wordsDue = await db.getAllFromIndex(
         "words",
         "byDueDate",
@@ -112,6 +115,7 @@ export async function getNextWordTypeAndInflection() {
 }
 
 export async function markCorrect(wordType: string, inflection: string) {
+    const db = await getDb();
     const word = await db.get("words", `${wordType}.${inflection}`);
     if (!word) {
         throw "BBB";
@@ -135,6 +139,7 @@ export async function markCorrect(wordType: string, inflection: string) {
 }
 
 export async function markIncorrect(wordType: string, inflection: string) {
+    const db = await getDb();
     const word = await db.get("words", `${wordType}.${inflection}`);
     if (!word) {
         throw "BBB";
@@ -150,15 +155,18 @@ export async function markIncorrect(wordType: string, inflection: string) {
 }
 
 export function wordTypeFilterStore(wordType: string): Writable<boolean> {
-    if (!wordType) {
-        console.log("wordType undefined");
-    }
     const store = writable(false);
-    db.get("wordTypeFilters", wordType)?.then((wordTypeFilter) => {
+    (async () => {
+        const db = await getDb();
+        const wordTypeFilter = await db.get("wordTypeFilters", wordType);
         store.set(wordTypeFilter?.included ?? false);
-    });
-    store.subscribe((newIncluded) => {
-        db.put("wordTypeFilters", { wordType, included: newIncluded });
+    })();
+
+    store.subscribe(async (newIncluded) => {
+        (await getDb()).put("wordTypeFilters", {
+            wordType,
+            included: newIncluded,
+        });
     });
     return store;
 }
