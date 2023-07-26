@@ -9,6 +9,7 @@
     import OptionsNoun from "$lib/OptionsNoun.svelte";
     import OptionsVerb from "$lib/OptionsVerb.svelte";
     import { goto } from "$app/navigation";
+    import { base } from "$app/paths";
 
     let allInflections: { [inflection in string]: string };
     let wordType: string;
@@ -21,7 +22,7 @@
     async function generateWord() {
         const randomized = await getNextWordTypeAndInflection();
         if (!randomized) {
-            await goto("/");
+            await goto(base);
             return;
         }
         answered = false;
@@ -63,7 +64,7 @@
 
 <div class="w-full h-full max-w-4xl mx-auto flex flex-col">
     {#if word}
-        <a class="p-4 text-white" href="/">Back</a>
+        <a class="p-4 text-white" href={base}>Back</a>
         <div class="flex flex-row justify-center items-end gap-2">
             <h2 class="text-3xl text-center text-white">
                 {word}

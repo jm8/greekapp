@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     import { getNextWordTypesAndInflections } from "$lib/spacedrepetition";
 </script>
 
@@ -6,7 +7,7 @@
     {#await getNextWordTypesAndInflections()}
         <a
             class="m-4 p-4 bg-green-400 hover:bg-green-300 focus:bg-green-300 text-black"
-            href="/quiz">...</a
+            href="{base}/quiz">...</a
         >
     {:then nextWordTypesAndInflections}
         {#if nextWordTypesAndInflections.length === 0}
@@ -14,13 +15,13 @@
         {:else}
             <a
                 class="m-4 p-4 bg-green-400 hover:bg-green-300 focus:bg-green-300 text-black"
-                href="/quiz"
+                href="{base}/quiz"
                 >Start ({nextWordTypesAndInflections.length} cards remaining)</a
             >
         {/if}
     {/await}
     <a
         class="m-4 p-4 bg-blue-400 hover:bg-blue-300 focus:bg-blue-300"
-        href="/settings">Settings</a
+        href="{base}/settings">Settings</a
     >
 </div>
