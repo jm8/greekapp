@@ -64,36 +64,46 @@ export async function getDb() {
 
 const db = await getDb();
 
-async function findAsync<T>(
+async function filterAsync<T>(
     xs: T[],
     f: (x: T) => Promise<boolean>
-): Promise<T | undefined> {
+): Promise<T[]> {
+    const result = [];
     for (const x of xs) {
         if (await f(x)) {
-            return x;
+            result.push(x);
         }
     }
-    return undefined;
+    return result;
 }
 
-export async function getNextWordTypeAndInflection() {
+export async function getNextWordTypesAndInflections() {
     const wordsDue = await db.getAllFromIndex(
         "words",
         "byDueDate",
         IDBKeyRange.upperBound(nowHour())
     );
-    const word = await findAsync(wordsDue, async (word) => {
+    const words = await filterAsync(wordsDue, async (word) => {
         const filter = await db.get(
             "wordTypeFilters",
             word.wordTypeAndInflection.split(".")[0]
         );
         return filter?.included ?? false;
     });
-    if (!word) {
+    const wordTypesAndInflections = words.map((word) => {
+        const [wordType, inflection] = word.wordTypeAndInflection.split(".");
+        return { wordType, inflection };
+    });
+
+    return wordTypesAndInflections;
+}
+
+export async function getNextWordTypeAndInflection() {
+    const nextWordTypesAndInflections = await getNextWordTypesAndInflections();
+    if (nextWordTypesAndInflections.length === 0) {
         return undefined;
     }
-    const [wordType, inflection] = word.wordTypeAndInflection.split(".");
-    return { wordType, inflection };
+    return nextWordTypesAndInflections[0];
 }
 
 export async function markCorrect(wordType: string, inflection: string) {

@@ -8,6 +8,7 @@
     } from "$lib/spacedrepetition";
     import OptionsNoun from "$lib/OptionsNoun.svelte";
     import OptionsVerb from "$lib/OptionsVerb.svelte";
+    import { goto } from "$app/navigation";
 
     let allInflections: { [inflection in string]: string };
     let wordType: string;
@@ -18,7 +19,8 @@
     async function generateWord() {
         const randomized = await getNextWordTypeAndInflection();
         if (!randomized) {
-            throw "AAA";
+            await goto("/");
+            return;
         }
         answered = false;
         correct = true;
@@ -51,7 +53,8 @@
 
 <div class="w-full h-full max-w-4xl mx-auto flex flex-col">
     {#if word}
-        <h2 class="p-4 text-3xl text-center text-white">{word}</h2>
+        <a class="p-4 text-white" href="/">Back</a>
+        <h2 class="text-3xl text-center text-white">{word}</h2>
         <div class="flex-1 flex flex-col justify-center">
             {#key allInflections}
                 {#if WORD_TYPES[wordType].partOfSpeech === "noun"}
